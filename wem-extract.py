@@ -1,6 +1,6 @@
 import os, subprocess, shutil, hashlib, csv, pprint, sys, json
 
-print "Overwatch wem extractor v0.2"
+print("Overwatch wem extractor v0.2")
 # get config
 with open('config.json') as data_file:
 	config = json.load(data_file)
@@ -26,13 +26,13 @@ for dir in os.listdir(folder):
 		# grab all the files
 		if file.endswith(".xxx"):
 			path = folder+'/'+dir+'/'+file
-			with open(path, 'r') as f:
+			with open(path, 'rb') as f:
 				# if first line contains wave headers
-				first_line = f.readline()
-				if "WAVEfmt" in first_line[:20]:
+				first_line = str(f.readline()[:20])
+				if "WAVEfmt" in first_line:
 					# show some progress
 					if counter % 100 == 0:
-						print counter
+						print(counter)
 					counter = counter + 1
 					# convert to ogg
 					FNULL = open(os.devnull, 'w')
@@ -44,7 +44,7 @@ for dir in os.listdir(folder):
 						# fix ogg
 						subprocess.call(config["paths"]["tools"]+'revorb.exe '+temp_path, stdout=FNULL, stderr=subprocess.STDOUT)
 						# check against hash storage
-						hash = hashlib.md5(temp_path).hexdigest()
+						hash = hashlib.md5(temp_path.encode('utf-8')).hexdigest()
 						if hash in hashStorage:
 							# move to a nice folder
 							shutil.move(temp_path, config["paths"]["exported"]+hashStorage[hash])
